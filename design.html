@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PeoplePulse — Design Preview (Baseline v1)</title>
+<style>
+  :root{
+    --pulse-blue:#2563EB;
+    --pulse-blue-dark:#1D4ED8;
+    --ink:#17212B;
+    --paper:#F8FAF9;
+    --white:#FFFFFF;
+    --teal:#0F766E;
+    --success:#15803D;
+    --warning:#D97706;
+    --error:#DC2626;
+    --border:#E5E7EB;
+    --muted:#64748B;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--pulse-blue)}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  /* Header */
+  header.top{
+    background:var(--white);
+    border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:10;
+  }
+  .top-inner{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1120px;margin:0 auto}
+  .wordmark{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}
+  .wordmark-name{font-weight:800;letter-spacing:0.12em;font-size:15px}
+  .wordmark-sub{font-size:11px;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase}
+  .nav{display:flex;gap:20px;font-size:14px;color:var(--muted)}
+  .nav span{white-space:nowrap}
+  /* Hero */
+  .hero{background:var(--white);border-bottom:1px solid var(--border)}
+  .hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;padding:64px 0 56px;align-items:center}
+  .eyebrow{font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:16px}
+  h1.page-heading{font-size:44px;line-height:52px;font-weight:800;letter-spacing:-0.03em;margin-bottom:18px;max-width:16ch;text-wrap:balance}
+  .lede{font-size:16px;line-height:24px;color:#334155;max-width:52ch;margin-bottom:12px}
+  .body-text{font-size:14px;line-height:22px;color:#334155;max-width:60ch}
+  .actions{display:flex;gap:12px;align-items:center;margin-top:24px;flex-wrap:wrap}
+  .btn-primary{
+    appearance:none;border:1px solid var(--pulse-blue-dark);background:var(--pulse-blue);color:#fff;
+    font-weight:700;font-size:15px;line-height:1;padding:15px 26px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block;
+    box-shadow:0 1px 2px rgba(23,33,43,.24),0 6px 18px rgba(37,99,235,.35);
+  }
+  .btn-primary:hover{background:var(--pulse-blue-dark);border-color:var(--pulse-blue-dark);box-shadow:0 1px 2px rgba(23,33,43,.28),0 8px 22px rgba(37,99,235,.42)}
+  .btn-primary:focus-visible,.btn-secondary:focus-visible,.text-action:focus-visible,input:focus-visible{outline:3px solid #BFDBFE;outline-offset:2px}
+  .btn-secondary{
+    appearance:none;background:var(--white);border:1px solid var(--border);color:var(--ink);
+    font-weight:600;font-size:14px;padding:13px 20px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block;
+  }
+  .btn-secondary:hover{border-color:#CBD5E1;background:var(--paper)}
+  .text-action{background:none;border:none;color:var(--pulse-blue);font-weight:600;font-size:14px;cursor:pointer;padding:13px 4px;text-decoration:underline;text-underline-offset:3px}
+  .micro{font-size:12px;line-height:18px;color:var(--muted);margin-top:14px}
+  /* Signal visual */
+  .signal-card{background:var(--ink);color:#E2E8F0;border-radius:16px;padding:28px;overflow:hidden}
+  .signal-card h3{font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:#94A3B8;margin-bottom:6px}
+  .signal-card p{font-size:13px;line-height:20px;color:#CBD5E1;margin-bottom:18px}
+  .signal-steps{display:flex;justify-content:space-between;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#94A3B8;margin-top:14px}
+  /* Sections */
+  section.block{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:32px;margin:32px 0}
+  section.block > h2{font-size:28px;line-height:36px;font-weight:750;letter-spacing:-0.01em;margin-bottom:8px}
+  section.block > p.section-desc{font-size:14px;line-height:22px;color:var(--muted);margin-bottom:24px;max-width:70ch}
+  .label{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:24px 0 12px}
+  .label:first-of-type{margin-top:0}
+  /* Colors */
+  .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .swatch{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--white)}
+  .swatch-color{height:72px}
+  .swatch-body{padding:10px 12px}
+  .swatch-name{font-size:13px;font-weight:700}
+  .swatch-hex{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .swatch-use{font-size:12px;color:var(--muted);margin-top:2px}
+  /* Type */
+  .type-row{border-top:1px solid var(--border);padding:14px 0;display:grid;grid-template-columns:220px 1fr;gap:16px;align-items:baseline}
+  .type-meta{font-size:12px;color:var(--muted)}
+  /* Inputs */
+  .field{max-width:520px}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+  .field input{
+    width:100%;font:inherit;font-size:14px;padding:12px 14px;border-radius:8px;
+    border:1px solid #CBD5E1;background:var(--white);color:var(--ink);
+  }
+  .field input::placeholder{color:#94A3B8}
+  .field-hint{font-size:12px;color:var(--muted);margin-top:6px}
+  /* Evidence + viz layout */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+  .evidence-card{border:1px solid var(--border);border-top:4px solid var(--pulse-blue);border-radius:16px;overflow:hidden;background:var(--white);box-shadow:0 10px 30px rgba(23,33,43,.10)}
+  .evidence-top{padding:26px 26px 22px}
+  .evidence-kicker{font-size:11px;letter-spacing:0.14em;font-weight:800;color:var(--teal);text-transform:uppercase;margin-bottom:12px}
+  .evidence-pct{font-size:56px;line-height:1;font-weight:800;letter-spacing:-0.04em;color:var(--ink)}
+  .evidence-what{font-size:16px;margin-top:6px;color:#334155}
+  .evidence-meta{margin-top:14px;font-size:13px;color:var(--muted)}
+  .evidence-meta strong{color:var(--ink)}
+  .evidence-footer{border-top:1px solid var(--border);background:var(--paper);padding:14px 24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .pill{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border-radius:999px;padding:5px 10px;display:inline-block}
+  .pill-teal{background:#CCFBF1;color:#0F766E;border:1px solid #99F6E4}
+  .pill-warn{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A}
+  .evidence-note{font-size:12px;color:var(--muted)}
+  /* Chart */
+  .chart{border:1px solid var(--border);border-radius:16px;padding:24px;background:var(--white)}
+  .chart h3{font-size:18px;line-height:26px;margin-bottom:4px}
+  .chart p{font-size:13px;color:var(--muted);margin-bottom:18px}
+  .bar-row{display:grid;grid-template-columns:150px 1fr 48px;gap:12px;align-items:center;margin:10px 0;font-size:13px}
+  .bar-track{background:#EEF2FF;border-radius:999px;height:12px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:999px;background:var(--pulse-blue)}
+  .bar-fill.teal{background:var(--teal)}
+  .bar-fill.slate{background:#94A3B8}
+  .bar-val{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:700;text-align:right}
+  table.sr-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:16px}
+  table.sr-table th,table.sr-table td{border:1px solid var(--border);padding:8px;text-align:left}
+  table.sr-table th{background:var(--paper)}
+  /* Brief */
+  .brief{border:1px solid var(--border);border-radius:16px;background:var(--paper);padding:28px}
+  .brief-kicker{font-size:11px;letter-spacing:0.14em;font-weight:800;text-transform:uppercase}
+  .brief h3{font-size:22px;line-height:30px;margin:6px 0 12px}
+  .brief-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  .brief-item{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .brief-item h4{font-size:14px;margin-bottom:6px}
+  .brief-item p{font-size:13px;line-height:20px;color:#334155}
+  .limitations{margin-top:16px;font-size:12px;line-height:18px;color:var(--muted);border-left:3px solid var(--warning);padding-left:12px}
+  footer{padding:32px 0 56px;color:var(--muted);font-size:12px;line-height:18px}
+  .checklist{background:var(--ink);color:#E2E8F0;border-radius:16px;padding:24px 28px;margin:32px 0}
+  .checklist h2{font-size:16px;margin-bottom:10px;color:#fff}
+  .checklist ul{columns:2;font-size:13px;line-height:24px;list-style:disc;padding-left:20px}
+  /* Responsive */
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:28px;padding:40px 0}
+    h1.page-heading{font-size:34px;line-height:42px}
+    .two-col{grid-template-columns:1fr}
+    .swatches{grid-template-columns:repeat(2,1fr)}
+    .brief-grid{grid-template-columns:1fr}
+    .nav{display:none}
+    .type-row{grid-template-columns:1fr;gap:4px}
+    .checklist ul{columns:1}
+    section.block{padding:24px 20px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <a class="wordmark" href="#" aria-label="PeoplePulse home">
+      <!-- Convergence mark: individual dots becoming one signal -->
+      <svg width="34" height="34" viewBox="0 0 34 34" role="img" aria-label="PeoplePulse convergence mark: scattered dots converging into a single bar">
+        <rect x="0" y="0" width="34" height="34" rx="8" fill="#17212B"/>
+        <circle cx="9" cy="8" r="2.2" fill="#93C5FD"/>
+        <circle cx="9" cy="17" r="2.2" fill="#60A5FA"/>
+        <circle cx="9" cy="26" r="2.2" fill="#2DD4BF"/>
+        <circle cx="16" cy="11" r="2.2" fill="#60A5FA"/>
+        <circle cx="16" cy="23" r="2.2" fill="#2DD4BF"/>
+        <rect x="22" y="7" width="4.5" height="20" rx="2.25" fill="#FFFFFF"/>
+      </svg>
+      <span>
+        <span class="wordmark-name">PEOPLEPULSE</span><br>
+        <span class="wordmark-sub">Human evidence platform</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Preview navigation">
+      <span>Overview</span><span>Research</span><span>Findings</span><span>Decision Brief</span>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO : page heading + body + buttons + signal visual -->
+  <div class="hero-grid" style="background:transparent">
+    <div>
+      <div class="eyebrow">Design preview · Baseline v1 · PRD §17–21</div>
+      <h1 class="page-heading">Turn assumptions into evidence.</h1>
+      <p class="lede"><strong>What are you trying to understand?</strong> PeoplePulse helps you understand what other people think, need, and experience — before you make decisions that involve them.</p>
+      <p class="body-text">People are the signal. A short Pulse collects individual perspectives, and PeoplePulse structures them into credible, context-aware evidence. No hype, no vanity analytics — just what respondents told you, and what remains uncertain.</p>
+      <div class="actions">
+        <a class="btn-primary" href="#evidence">+ New Research Project</a>
+        <a class="btn-secondary" href="#brief">See what people told you</a>
+        <button class="text-action" type="button">View live results →</button>
+      </div>
+      <p class="micro">Evidence before confidence · 5–10 questions · about 1–3 minutes per Pulse</p>
+    </div>
+    <div class="signal-card" aria-label="Visual representation of the PeoplePulse signal and convergence concept">
+      <h3>People → Signal → Pattern → Evidence</h3>
+      <p>Individual perspectives becoming collective signal. Each dot is a participant; density becomes pattern.</p>
+      <svg viewBox="0 0 400 170" width="100%" height="170" role="img" aria-label="Dots on the left converging into a single pulse bar on the right">
+        <!-- scattered dots -->
+        <g fill="#60A5FA" opacity="0.95">
+          <circle cx="22" cy="20" r="5"/><circle cx="22" cy="55" r="5"/><circle cx="22" cy="90" r="5"/><circle cx="22" cy="125" r="5"/><circle cx="22" cy="155" r="5"/>
+          <circle cx="60" cy="35" r="5"/><circle cx="60" cy="72" r="5"/><circle cx="60" cy="108" r="5"/><circle cx="60" cy="142" r="5"/>
+        </g>
+        <g fill="#2DD4BF" opacity="0.9">
+          <circle cx="100" cy="52" r="5"/><circle cx="100" cy="88" r="5"/><circle cx="100" cy="122" r="5"/>
+          <circle cx="142" cy="70" r="5"/><circle cx="142" cy="104" r="5"/>
+        </g>
+        <!-- convergence lines -->
+        <g stroke="#334155" stroke-width="1.2" opacity="0.8">
+          <line x1="28" y1="22" x2="180" y2="80"/><line x1="28" y1="56" x2="180" y2="82"/>
+          <line x1="28" y1="90" x2="180" y2="85"/><line x1="28" y1="124" x2="180" y2="88"/><line x1="28" y1="154" x2="180" y2="90"/>
+          <line x1="66" y1="36" x2="180" y2="82"/><line x1="66" y1="72" x2="180" y2="84"/>
+          <line x1="66" y1="108" x2="180" y2="87"/><line x1="66" y1="142" x2="180" y2="89"/>
+        </g>
+        <!-- collective signal bar -->
+        <rect x="185" y="45" width="14" height="80" rx="7" fill="#FFFFFF"/>
+        <rect x="208" y="60" width="10" height="50" rx="5" fill="#93C5FD"/>
+        <rect x="226" y="70" width="8" height="30" rx="4" fill="#2DD4BF"/>
+        <!-- density pattern -->
+        <g fill="#1E293B" opacity="0.9">
+          <rect x="255" y="55" width="120" height="8" rx="4" fill="#2563EB"/>
+          <rect x="255" y="70" width="92" height="8" rx="4" fill="#0F766E"/>
+          <rect x="255" y="85" width="60" height="8" rx="4" fill="#64748B"/>
+          <rect x="255" y="100" width="110" height="8" rx="4" fill="#2563EB" opacity="0.55"/>
+        </g>
+        <text x="255" y="130" fill="#94A3B8" font-size="11" font-family="inherit">64% · collective pattern</text>
+      </svg>
+      <div class="signal-steps" aria-hidden="true"><span>People</span><span>Signal</span><span>Pattern</span><span>Evidence</span></div>
+    </div>
+  </div>
+
+  <!-- COLORS + TYPOGRAPHY -->
+  <section class="block" aria-labelledby="h-colors">
+    <h2 id="h-colors">Brand &amp; design system</h2>
+    <p class="section-desc">Deep ink, warm paper, Pulse Blue, and a restrained teal. Clean editorial layout, generous whitespace, calm and credible research aesthetic. Typeface direction: Inter-style grotesque (system stack, no external fonts).</p>
+    <div class="label">Primary &amp; secondary colors</div>
+    <div class="swatches">
+      <div class="swatch"><div class="swatch-color" style="background:#2563EB"></div><div class="swatch-body"><div class="swatch-name">Pulse Blue · Primary</div><div class="swatch-hex">#2563EB</div><div class="swatch-use">Actions, key data, links</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#17212B"></div><div class="swatch-body"><div class="swatch-name">Deep Ink</div><div class="swatch-hex">#17212B</div><div class="swatch-use">Text, header, evidence</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F8FAF9;border-bottom:1px solid var(--border)"></div><div class="swatch-body"><div class="swatch-name">Warm Paper</div><div class="swatch-hex">#F8FAF9</div><div class="swatch-use">Page background</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#0F766E"></div><div class="swatch-body"><div class="swatch-name">Signal Teal · Data</div><div class="swatch-hex">#0F766E</div><div class="swatch-use">Information / data color</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#FFFFFF;border-bottom:1px solid var(--border)"></div><div class="swatch-body"><div class="swatch-name">White</div><div class="swatch-hex">#FFFFFF</div><div class="swatch-use">Cards, surfaces</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#E5E7EB"></div><div class="swatch-body"><div class="swatch-name">Border</div><div class="swatch-hex">#E5E7EB</div><div class="swatch-use">Dividers, card edges</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#64748B"></div><div class="swatch-body"><div class="swatch-name">Muted text</div><div class="swatch-hex">#64748B</div><div class="swatch-use">Secondary copy</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:linear-gradient(90deg,#15803D 0 33%,#D97706 33% 66%,#DC2626 66% 100%)"></div><div class="swatch-body"><div class="swatch-name">Semantic</div><div class="swatch-hex">#15803D · #D97706 · #DC2626</div><div class="swatch-use">Success / warning / error</div></div></div>
+    </div>
+    <div class="label">Typography hierarchy (PRD §18)</div>
+    <div class="type-row"><div class="type-meta">Display · 48/56 · 800</div><div style="font-size:48px;line-height:56px;font-weight:800;letter-spacing:-0.03em">Evidence before confidence.</div></div>
+    <div class="type-row"><div class="type-meta">H1 · 36/44</div><div style="font-size:36px;line-height:44px;font-weight:800">What are you trying to understand?</div></div>
+    <div class="type-row"><div class="type-meta">H2 · 28/36</div><div style="font-size:28px;line-height:36px;font-weight:700">Here’s what the evidence suggests.</div></div>
+    <div class="type-row"><div class="type-meta">H3 · 22/30</div><div style="font-size:22px;line-height:30px;font-weight:700">Why people said it</div></div>
+    <div class="type-row"><div class="type-meta">H4 · 18/26</div><div style="font-size:18px;line-height:26px;font-weight:700">What remains uncertain</div></div>
+    <div class="type-row"><div class="type-meta">Body large · 16/24</div><div style="font-size:16px;line-height:24px">We asked university students how they choose meals, so you can decide with evidence from the people affected.</div></div>
+    <div class="type-row"><div class="type-meta">Body · 14/22</div><div style="font-size:14px;line-height:22px">A Pulse takes about 1–3 minutes. Responses are shown with audience context and limitations — never as population truth.</div></div>
+    <div class="type-row"><div class="type-meta">Small · 13/20</div><div style="font-size:13px;line-height:20px">1,284 participants · University students · 18–25 · Collected 12–19 May</div></div>
+    <div class="type-row"><div class="type-meta">Caption · 12/18</div><div style="font-size:12px;line-height:18px;color:var(--muted)">Self-selected sample · Early signal · See methodology</div></div>
+  </section>
+
+  <!-- COMPONENTS -->
+  <section class="block" aria-labelledby="h-actions">
+    <h2 id="h-actions">Actions &amp; input</h2>
+    <p class="section-desc">Calm, precise controls. Primary action in Pulse Blue; secondary as quiet outline; tertiary as a text action. Focus states are always visible.</p>
+    <div class="label">Buttons</div>
+    <div class="actions" style="margin-top:0">
+      <button class="btn-primary" type="button">Create Pulse</button>
+      <button class="btn-secondary" type="button">Preview as participant</button>
+      <button class="text-action" type="button">View methodology</button>
+    </div>
+    <div class="label">Sample input field</div>
+    <div class="field">
+      <label for="research-q">What are you trying to understand?</label>
+      <input id="research-q" type="text" placeholder="e.g. Will students use a weekly meal plan?" value="">
+      <div class="field-hint">Precise, curious, calm and human. Avoid hype and exaggerated certainty.</div>
+    </div>
+  </section>
+
+  <!-- EVIDENCE + VISUALIZATION -->
+  <section class="block" id="evidence" aria-labelledby="h-evidence">
+    <h2 id="h-evidence">Evidence, with context</h2>
+    <p class="section-desc">Every finding pairs the pattern with its boundaries: who participated, how many, and what the signal means — and does not mean.</p>
+    <div class="two-col">
+      <article class="evidence-card" aria-label="Sample Evidence Card">
+        <div class="evidence-top">
+          <div class="evidence-kicker">Evidence</div>
+          <div class="evidence-pct">64%</div>
+          <div class="evidence-what">would consider using the service</div>
+          <div class="evidence-meta"><strong>1,284 participants</strong><br>University students · 18–25 · Nigeria</div>
+        </div>
+        <div class="evidence-footer">
+          <span class="pill pill-teal">Early signal</span>
+          <span class="evidence-note">Self-selected sample · 12–19 May · “64% of respondents”, not “64% of Nigerians”</span>
+        </div>
+      </article>
+      <div class="chart" aria-label="Simple data visualization: response distribution">
+        <h3>Signal graphic · What respondents chose</h3>
+        <p>Comprehension over decoration. Horizontal bars, restrained color.</p>
+        <div class="bar-row"><span>Would use it</span><div class="bar-track"><div class="bar-fill" style="width:64%"></div></div><span class="bar-val">64%</span></div>
+        <div class="bar-row"><span>Might try it</span><div class="bar-track"><div class="bar-fill teal" style="width:22%"></div></div><span class="bar-val">22%</span></div>
+        <div class="bar-row"><span>Not interested</span><div class="bar-track"><div class="bar-fill slate" style="width:14%"></div></div><span class="bar-val">14%</span></div>
+        <table class="sr-table" aria-label="Data table alternative for the chart">
+          <tr><th>Option</th><th>Share of 1,284 respondents</th></tr>
+          <tr><td>Would use it</td><td>64%</td></tr>
+          <tr><td>Might try it</td><td>22%</td></tr>
+          <tr><td>Not interested</td><td>14%</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- DECISION BRIEF -->
+  <section class="block" id="brief" aria-labelledby="h-brief">
+    <h2 id="h-brief">Decision Brief · flagship output</h2>
+    <p class="section-desc">A modern editorial research document. Readable, printable, methodology-aware, decision-oriented.</p>
+    <div class="brief">
+      <div class="brief-kicker" style="color:var(--ink)">PeoplePulse · Decision Brief</div>
+      <h3>Student Meal Service — Should we pilot a weekly plan?</h3>
+      <p style="font-size:13px;color:var(--muted)">Project: Campus meals · Audience: University students 18–25 · 1,284 respondents · 12–19 May</p>
+      <div class="brief-grid">
+        <div class="brief-item"><h4>The Question</h4><p>What were we trying to understand? Whether students would consider a ₦2,000/week meal plan.</p></div>
+        <div class="brief-item"><h4>What We Found</h4><p>Observed pattern: 64% of respondents would consider it. Price sensitivity clustered around delivery time.</p></div>
+        <div class="brief-item"><h4>Why People Said It</h4><p>“It saves cooking time during exams.” Convenience outweighed variety for 3 in 5 open-text explanations.</p></div>
+        <div class="brief-item"><h4>What To Investigate Next</h4><p>Test the ₦2,000 price point directly, and ask why the 14% declined.</p></div>
+      </div>
+      <p class="limitations"><strong>Evidence limitations:</strong> self-selected sample; not representative of all students. Interpretation ≠ prediction. What remains uncertain: repeat purchase intent.</p>
+    </div>
+  </section>
+
+  <div class="checklist" aria-label="Baseline coverage checklist">
+    <h2>Baseline coverage — all 13 requested elements</h2>
+    <ul>
+      <li>1 · Wordmark in header</li>
+      <li>2 · Convergence visual (header mark + hero)</li>
+      <li>3 · Primary &amp; secondary colors</li>
+      <li>4 · Typography hierarchy</li>
+      <li>5 · Page heading (“Turn assumptions…”)</li>
+      <li>6 · Body text (lede + body)</li>
+      <li>7 · Primary button</li>
+      <li>8 · Secondary button + text action</li>
+      <li>9 · Sample input field</li>
+      <li>10 · Evidence Card (64% · 1,284 · audience · status)</li>
+      <li>11 · Decision Brief excerpt</li>
+      <li>12 · Signal graphic + bar visualization</li>
+      <li>13 · Responsive (900px breakpoint)</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    PeoplePulse · Baseline design preview v1 · Deep ink #17212B · Warm paper #F8FAF9 · Pulse Blue #2563EB · Signal Teal #0F766E · “People are the signal. Evidence is the product.”<br>
+    Self-contained file — no external frameworks, fonts, or scripts. Resize the window to verify responsive behavior.
+  </div>
+</footer>
+
+</body>
+</html>

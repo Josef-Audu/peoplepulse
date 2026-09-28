@@ -1975,3 +1975,15 @@ The decision comes last.
 **Evidence is the product.**  
 **Better decisions are the outcome.**
 
+---
+
+## Design Preview Refinement Note
+
+The baseline `design.html` preview received one targeted hierarchy and contrast refinement:
+
+* The main heading hierarchy was strengthened so "Turn assumptions into evidence." is the strongest textual element.
+* The primary CTA contrast and prominence were improved while keeping the Pulse Blue fill.
+* The Evidence Card was made more visually distinct (top accent, elevation, larger percentage, teal kicker) while remaining restrained and editorial.
+* The existing PeoplePulse color palette and convergence/signal concept were preserved with no new colors introduced.
+* The refinement intentionally avoided a full redesign or unnecessary visual additions.
+
