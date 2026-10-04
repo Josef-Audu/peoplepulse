@@ -1,0 +1,12 @@
+$ npm run lint 2>&1 | Select-Object -First 60
+
+
+> peoplepulse@0.1.0 lint
+> eslint .
+
+
+C:\Users\User\desktop\peoplepulse\components\auth\SignInForm.tsx
+  10:24  warning  'normalizeEmail' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (0 errors, 1 warning)
+
