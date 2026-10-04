@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Next.js production MVP
+.next/
+out/
+build/
+
+# Environment files — NEVER commit real credentials.
+# (.env.example documents variable names only.)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env*.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

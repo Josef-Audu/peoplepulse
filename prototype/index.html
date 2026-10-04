@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PeoplePulse — Working Prototype</title>
+<style>
+  :root{
+    --pulse-blue:#2563EB;
+    --pulse-blue-dark:#1D4ED8;
+    --ink:#17212B;
+    --paper:#F8FAF9;
+    --white:#FFFFFF;
+    --teal:#0F766E;
+    --warning:#D97706;
+    --border:#E5E7EB;
+    --muted:#64748B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+  header.top{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+  .top-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;max-width:1060px;margin:0 auto}
+  .wordmark{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}
+  .wordmark-name{font-weight:800;letter-spacing:.12em;font-size:15px}
+  .wordmark-sub{font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+  .proto-badge{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);background:#CCFBF1;border:1px solid #99F6E4;border-radius:999px;padding:5px 10px;white-space:nowrap}
+  nav.nav{display:flex;gap:18px;font-size:14px;color:var(--muted)}
+  nav.nav a{color:var(--muted);text-decoration:none}
+  nav.nav a:hover{color:var(--ink)}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;padding:56px 0 40px;align-items:start}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:14px}
+  h1{font-size:44px;line-height:52px;font-weight:800;letter-spacing:-.03em;margin-bottom:16px;max-width:16ch;text-wrap:balance}
+  .lede{font-size:16px;line-height:24px;color:#334155;max-width:52ch;margin-bottom:10px}
+  .body{font-size:14px;line-height:22px;color:#334155;max-width:60ch}
+  .actions{display:flex;gap:12px;align-items:center;margin-top:22px;flex-wrap:wrap}
+  .btn-primary{appearance:none;border:1px solid var(--pulse-blue-dark);background:var(--pulse-blue);color:#fff;font-weight:700;font-size:15px;line-height:1;padding:15px 26px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block;box-shadow:0 1px 2px rgba(23,33,43,.24),0 6px 18px rgba(37,99,235,.35)}
+  .btn-primary:hover{background:var(--pulse-blue-dark)}
+  .btn-secondary{appearance:none;background:var(--white);border:1px solid var(--border);color:var(--ink);font-weight:600;font-size:14px;padding:13px 20px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block}
+  .btn-primary:focus-visible,.btn-secondary:focus-visible,.opt:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #BFDBFE;outline-offset:2px}
+  .micro{font-size:12px;line-height:18px;color:var(--muted);margin-top:12px}
+  .card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:26px;margin:24px 0}
+  .card h2{font-size:24px;line-height:32px;margin-bottom:6px;letter-spacing:-.01em}
+  .card .desc{font-size:14px;color:var(--muted);margin-bottom:18px;max-width:70ch}
+  .live-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  .pill{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:5px 10px;display:inline-block}
+  .pill-live{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}
+  .pill-teal{background:#CCFBF1;color:#0F766E;border:1px solid #99F6E4}
+  .pulse-meta{font-size:13px;color:var(--muted)}
+  fieldset{border:none;margin:16px 0 8px}
+  legend{font-size:15px;font-weight:700;margin-bottom:10px}
+  .opt{display:flex;gap:10px;align-items:center;width:100%;text-align:left;font:inherit;font-size:14px;background:var(--white);border:1px solid #CBD5E1;border-radius:10px;padding:12px 14px;margin:8px 0;cursor:pointer}
+  .opt[aria-pressed="true"]{border-color:var(--pulse-blue);box-shadow:0 0 0 3px #BFDBFE}
+  .opt .dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--muted);flex:none}
+  .opt[aria-pressed="true"] .dot{border-color:var(--pulse-blue);background:var(--pulse-blue)}
+  .why{margin-top:14px}
+  .why label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+  textarea{width:100%;font:inherit;font-size:14px;padding:10px 12px;border:1px solid #CBD5E1;border-radius:8px;min-height:72px;resize:vertical;background:var(--white);color:var(--ink)}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+  .evidence-card{border:1px solid var(--border);border-top:4px solid var(--pulse-blue);border-radius:16px;overflow:hidden;background:var(--white);box-shadow:0 10px 30px rgba(23,33,43,.10)}
+  .evidence-top{padding:24px 24px 20px}
+  .evidence-kicker{font-size:11px;letter-spacing:.14em;font-weight:800;color:var(--teal);text-transform:uppercase;margin-bottom:10px}
+  .evidence-pct{font-size:56px;line-height:1;font-weight:800;letter-spacing:-.04em}
+  .evidence-what{font-size:16px;margin-top:6px;color:#334155}
+  .evidence-meta{margin-top:12px;font-size:13px;color:var(--muted)}
+  .evidence-meta strong{color:var(--ink)}
+  .evidence-footer{border-top:1px solid var(--border);background:var(--paper);padding:14px 24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .evidence-note{font-size:12px;color:var(--muted)}
+  .chart{border:1px solid var(--border);border-radius:16px;padding:22px;background:var(--white)}
+  .chart h3{font-size:17px;margin-bottom:4px}
+  .chart p{font-size:13px;color:var(--muted);margin-bottom:14px}
+  .bar-row{display:grid;grid-template-columns:130px 1fr 52px;gap:10px;align-items:center;margin:10px 0;font-size:13px}
+  .bar-track{background:#EEF2FF;border-radius:999px;height:12px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:999px;background:var(--pulse-blue);transition:width .4s ease}
+  .bar-fill.teal{background:var(--teal)}
+  .bar-fill.slate{background:#94A3B8}
+  .bar-val{font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .context{font-size:12px;line-height:18px;color:var(--muted);margin-top:14px;border-left:3px solid var(--warning);padding-left:12px}
+  .brief{background:var(--paper);border:1px solid var(--border);border-radius:16px;padding:24px;margin:24px 0}
+  .brief-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  .brief-item{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .brief-item h4{font-size:14px;margin-bottom:6px}
+  .brief-item p{font-size:13px;color:#334155}
+  .notice{font-size:12px;color:var(--muted);background:var(--white);border:1px dashed #CBD5E1;border-radius:12px;padding:12px 16px;margin:24px 0}
+  footer{padding:28px 0 48px;color:var(--muted);font-size:12px}
+  .signal-mini{background:var(--ink);color:#CBD5E1;border-radius:16px;padding:22px}
+  .signal-mini h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#94A3B8;margin-bottom:8px}
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:24px;padding:36px 0}
+    h1{font-size:34px;line-height:42px}
+    .two-col,.brief-grid{grid-template-columns:1fr}
+    nav.nav{display:none}
+    .bar-row{grid-template-columns:110px 1fr 48px}
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <a class="wordmark" href="#top" aria-label="PeoplePulse home">
+      <svg width="32" height="32" viewBox="0 0 34 34" role="img" aria-label="PeoplePulse convergence mark">
+        <rect x="0" y="0" width="34" height="34" rx="8" fill="#17212B"/>
+        <circle cx="9" cy="8" r="2.2" fill="#93C5FD"/><circle cx="9" cy="17" r="2.2" fill="#60A5FA"/><circle cx="9" cy="26" r="2.2" fill="#2DD4BF"/>
+        <circle cx="16" cy="11" r="2.2" fill="#60A5FA"/><circle cx="16" cy="23" r="2.2" fill="#2DD4BF"/>
+        <rect x="22" y="7" width="4.5" height="20" rx="2.25" fill="#FFFFFF"/>
+      </svg>
+      <span><span class="wordmark-name">PEOPLEPULSE</span><br><span class="wordmark-sub">Human evidence platform</span></span>
+    </a>
+    <span class="proto-badge">Working prototype · mock data</span>
+    <nav class="nav" aria-label="Prototype sections"><a href="#pulse">Live Pulse</a><a href="#evidence">Evidence</a><a href="#brief">Brief</a></nav>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">Build Prototype &amp; Record Demo · PRD core loop</div>
+      <h1>Turn assumptions into evidence.</h1>
+      <p class="lede"><strong>What are you trying to understand?</strong> PeoplePulse is a human evidence platform: a short Pulse collects what people think, and the product is the bounded evidence — never a population claim.</p>
+      <p class="body">Below is a live public-opinion signal with an Evidence Card, a simple visualization, and its limits. Answer once to see the signal update. Mock data resets on reload.</p>
+      <div class="actions">
+        <a class="btn-primary" href="#pulse">Answer the live Pulse</a>
+        <a class="btn-secondary" href="#evidence">See the evidence</a>
+      </div>
+      <p class="micro">Evidence before confidence · Decision → Pulse → Responses → Why → Evidence</p>
+    </div>
+    <div class="signal-mini" aria-label="Convergence concept">
+      <h3>People → Signal → Pattern → Evidence</h3>
+      <svg viewBox="0 0 400 120" width="100%" height="120" role="img" aria-label="Dots converging into a single signal bar">
+        <g fill="#60A5FA"><circle cx="22" cy="20" r="5"/><circle cx="22" cy="55" r="5"/><circle cx="22" cy="90" r="5"/><circle cx="60" cy="36" r="5"/><circle cx="60" cy="72" r="5"/></g>
+        <g fill="#2DD4BF"><circle cx="100" cy="46" r="5"/><circle cx="100" cy="80" r="5"/><circle cx="142" cy="63" r="5"/></g>
+        <g stroke="#475569" stroke-width="1.2"><line x1="28" y1="22" x2="180" y2="58"/><line x1="28" y1="56" x2="180" y2="60"/><line x1="28" y1="90" x2="180" y2="62"/><line x1="66" y1="38" x2="180" y2="60"/><line x1="66" y1="73" x2="180" y2="61"/></g>
+        <rect x="185" y="28" width="14" height="66" rx="7" fill="#FFFFFF"/>
+        <rect x="208" y="40" width="10" height="42" rx="5" fill="#93C5FD"/>
+        <rect x="226" y="48" width="8" height="26" rx="4" fill="#2DD4BF"/>
+        <rect x="255" y="40" width="120" height="8" rx="4" fill="#2563EB"/><rect x="255" y="54" width="92" height="8" rx="4" fill="#0F766E"/><rect x="255" y="68" width="60" height="8" rx="4" fill="#64748B"/>
+      </svg>
+      <p style="font-size:13px">Individual perspectives becoming collective signal. Each dot is a participant; density becomes pattern.</p>
+    </div>
+  </div>
+
+  <section class="card" id="pulse" aria-labelledby="h-pulse">
+    <div class="live-row"><span class="pill pill-live">● Live signal</span><span class="pill pill-teal">Prototype</span></div>
+    <h2 id="h-pulse">Student Meal Service — live Pulse</h2>
+    <p class="desc">We want to understand how students currently choose meals. 1 question below · about 30 seconds. Anonymous in this prototype.</p>
+    <p class="pulse-meta" id="pulse-progress">Question 1 of 1 · University students · 18–25</p>
+    <fieldset>
+      <legend>Would you consider a ₦2,000/week campus meal plan?</legend>
+      <div id="options" role="radiogroup" aria-label="Pulse options">
+        <button class="opt" type="button" data-opt="use" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Would use it</button>
+        <button class="opt" type="button" data-opt="try" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Might try it</button>
+        <button class="opt" type="button" data-opt="no" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Not interested</button>
+      </div>
+    </fieldset>
+    <div class="why" id="why-wrap" hidden>
+      <label for="why">Why? <span style="font-weight:400;color:var(--muted)">(optional — the Ask Why step)</span></label>
+      <textarea id="why" maxlength="280" placeholder="e.g. It would save cooking time during exams…"></textarea>
+    </div>
+    <div class="actions">
+      <button class="btn-primary" id="submit" type="button" disabled>Submit response</button>
+      <span class="micro" id="vote-status" role="status" aria-live="polite">Select an option to continue.</span>
+    </div>
+  </section>
+
+  <section class="card" id="evidence" aria-labelledby="h-evidence">
+    <h2 id="h-evidence">Evidence, with context</h2>
+    <p class="desc">Pattern plus boundaries. <strong>Measurement</strong>: <span id="m-count">1,284</span> answered. <strong>Pattern</strong>: share below. <strong>Interpretation</strong>: direction only — never a population claim.</p>
+    <div class="two-col">
+      <article class="evidence-card" aria-label="Evidence Card">
+        <div class="evidence-top">
+          <div class="evidence-kicker">Evidence</div>
+          <div class="evidence-pct" id="ev-pct">64%</div>
+          <div class="evidence-what">would consider using the service</div>
+          <div class="evidence-meta"><strong id="ev-count">1,284 participants</strong><br>University students · 18–25 · Nigeria</div>
+        </div>
+        <div class="evidence-footer">
+          <span class="pill pill-teal">Early signal</span>
+          <span class="evidence-note">Self-selected sample · 12–19 May · “<span id="ev-pct-2">64%</span> of respondents”, not “of Nigerians”</span>
+        </div>
+      </article>
+      <div class="chart" aria-label="Response distribution">
+        <h3>What respondents chose</h3>
+        <p id="chart-sub">Live from prototype data · updates when you vote.</p>
+        <div class="bar-row"><span>Would use it</span><div class="bar-track"><div class="bar-fill" id="bar-use" style="width:64%"></div></div><span class="bar-val" id="val-use">64%</span></div>
+        <div class="bar-row"><span>Might try it</span><div class="bar-track"><div class="bar-fill teal" id="bar-try" style="width:22%"></div></div><span class="bar-val" id="val-try">22%</span></div>
+        <div class="bar-row"><span>Not interested</span><div class="bar-track"><div class="bar-fill slate" id="bar-no" style="width:14%"></div></div><span class="bar-val" id="val-no">14%</span></div>
+        <p class="context"><strong>Evidence context:</strong> collection 12–19 May · link-shared recruitment · self-selected sample · not representative of all students. Interpretation ≠ prediction.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="brief" id="brief" aria-labelledby="h-brief">
+    <div class="eyebrow">Decision Brief · flagship output (preview)</div>
+    <h2 id="h-brief" style="font-size:24px">Should we pilot the weekly plan?</h2>
+    <p class="pulse-meta">Project: Campus meals · Audience: University students 18–25 · <span id="brief-count">1,284</span> respondents</p>
+    <div class="brief-grid">
+      <div class="brief-item"><h4>The Question</h4><p>Whether students would consider a ₦2,000/week plan.</p></div>
+      <div class="brief-item"><h4>What We Found</h4><p>Observed pattern: most respondents would consider it; price sensitivity centers on delivery time.</p></div>
+      <div class="brief-item"><h4>Why People Said It</h4><p id="why-quote">“It saves cooking time during exams.” Convenience outweighs variety in open-text answers.</p></div>
+      <div class="brief-item"><h4>What Remains Uncertain</h4><p>Repeat purchase intent and the 14% who declined — next follow-up.</p></div>
+    </div>
+    <div class="actions"><a class="btn-primary" href="#pulse">Start your own Pulse</a></div>
+  </section>
+
+  <div class="notice">Prototype notice: all counts and quotes on this page are <strong>prototype-only mock data</strong> for demonstration. No accounts, database, or network calls — votes update this page only and reset on reload.</div>
+</main>
+
+<footer><div class="wrap">PeoplePulse prototype · Deep Ink #17212B · Warm Paper #F8FAF9 · Pulse Blue #2563EB · Signal Teal #0F766E · “People are the signal. Evidence is the product.”</div></footer>
+
+<script>
+// PROTOTYPE_DATA — prototype-only mock data. No backend. Reset on reload.
+const PROTOTYPE_DATA = {
+  pulse: { id: "demo-meal-plan", audience: "University students · 18–25 · Nigeria", collection: "12–19 May", recruitment: "link-shared" },
+  results: {
+    totalResponses: 1284,
+    options: [
+      { id: "use", label: "Would use it", votes: 822 },
+      { id: "try", label: "Might try it", votes: 282 },
+      { id: "no", label: "Not interested", votes: 180 }
+    ]
+  }
+};
+(function () {
+  const state = { selected: null, voted: false };
+  const $ = (id) => document.getElementById(id);
+  const opts = Array.from(document.querySelectorAll(".opt"));
+  const submit = $("submit"), status = $("vote-status"), whyWrap = $("why-wrap");
+
+  function totals() {
+    const r = PROTOTYPE_DATA.results;
+    const t = r.totalResponses;
+    const pct = (v) => Math.round((v / t) * 100);
+    return { t, use: pct(r.options[0].votes), try_: pct(r.options[1].votes), no: pct(r.options[2].votes) };
+  }
+  function render() {
+    const { t, use, try_, no } = totals();
+    const fmt = (n) => n.toLocaleString("en-US");
+    $("bar-use").style.width = use + "%"; $("val-use").textContent = use + "%";
+    $("bar-try").style.width = try_ + "%"; $("val-try").textContent = try_ + "%";
+    $("bar-no").style.width = no + "%"; $("val-no").textContent = no + "%";
+    $("ev-pct").textContent = use + "%"; $("ev-pct-2").textContent = use + "%";
+    $("ev-count").textContent = fmt(t) + " participants";
+    $("m-count").textContent = fmt(t); $("brief-count").textContent = fmt(t);
+  }
+  opts.forEach((b) => b.addEventListener("click", () => {
+    if (state.voted) return;
+    state.selected = b.dataset.opt;
+    opts.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    submit.disabled = false;
+    whyWrap.hidden = false;
+    status.textContent = "Ready — submit to add your response to the local signal.";
+  }));
+  submit.addEventListener("click", () => {
+    if (!state.selected || state.voted) return;
+    const r = PROTOTYPE_DATA.results;
+    r.options.find((o) => o.id === state.selected).votes += 1;
+    r.totalResponses += 1;
+    const why = $("why").value.trim();
+    if (why) $("why-quote").textContent = "\u201C" + why.slice(0, 140) + "\u201D";
+    state.voted = true;
+    submit.disabled = true;
+    opts.forEach((x) => { x.disabled = true; });
+    render();
+    status.textContent = "Recorded locally (prototype only). The Evidence Card and chart above now include your response.";
+    $("pulse-progress").textContent = "Completed · thank you — this is the prototype completion state.";
+  });
+  render();
+})();
+</script>
+</body>
+</html>

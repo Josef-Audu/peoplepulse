@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * PeoplePulse token mirror as CSS variables (PRD §17, plan AD-11).
+ * Tailwind classes (bg-pulse, text-ink, …) are authoritative in components;
+ * these variables exist for non-Tailwind contexts (e.g. inline SVG, print CSS later).
+ */
+:root {
+  --pulse: #2563eb;
+  --pulse-dark: #1d4ed8;
+  --ink: #17212b;
+  --paper: #f8faf9;
+  --signal-teal: #0f766e;
+  --success: #15803d;
+  --warning: #d97706;
+  --error: #dc2626;
+  --border: #e5e7eb;
+  --muted: #64748b;
+}
+
+/* PRD §23 accessibility foundation: visible keyboard focus everywhere. */
+:where(a, button, summary, [role="button"]):focus-visible {
+  outline: 3px solid #bfdbfe;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+html {
+  scroll-behavior: smooth;
+}

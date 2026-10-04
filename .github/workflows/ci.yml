@@ -1,0 +1,41 @@
+# PeoplePulse Phase 0 CI — validation only, no deployment.
+# Exit criterion: "dev runs, / renders, CI green."
+# No Supabase credentials or production secrets required: the production app
+# builds fully static from the credential-free scaffold, and the assessment
+# prototype validator needs no network access.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies reproducibly
+        run: npm ci
+
+      - name: Lint production app
+        run: npm run lint
+
+      - name: Typecheck production app
+        run: npx tsc --noEmit
+
+      - name: Production build
+        run: npm run build
+
+      - name: Validate assessment prototype
+        run: npm run validate
