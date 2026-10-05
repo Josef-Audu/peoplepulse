@@ -1,3 +1,10 @@
 [build]
 command = "npm run build"
 publish = ".next"
+
+# Secret scanning runs against the build output, where Next.js intentionally
+# inlines these two publishable (non-confidential) values into the Edge
+# Function bundle. Omit only these key names — scanning stays on for
+# everything else. No secret values are stored here, only key names.
+[build.environment]
+SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY"
