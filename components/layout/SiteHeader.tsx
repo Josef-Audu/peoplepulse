@@ -1,11 +1,10 @@
 import Link from "next/link";
+import { ConvergenceMark } from "@/components/brand/ConvergenceMark";
 
 export function Wordmark() {
   return (
     <Link href="/" aria-label="PeoplePulse home" className="flex min-h-[44px] items-center gap-3">
-      <span aria-hidden="true" className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink">
-        <span className="h-4 w-1.5 rounded-full bg-white" />
-      </span>
+      <ConvergenceMark size={32} label="PeoplePulse home" />
       <span>
         <span className="block text-sm font-extrabold tracking-[0.12em]">PEOPLEPULSE</span>
         <span className="block text-[11px] uppercase tracking-[0.08em] text-muted">
