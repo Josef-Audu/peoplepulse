@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { ConvergenceMark } from "@/components/brand/ConvergenceMark";
+import { BrandMark } from "@/components/brand/BrandMark";
 import { SignalGraphic } from "@/components/landing/SignalGraphic";
 import {
   ProblemSection,
@@ -134,7 +134,7 @@ export default function Home() {
       <footer className="border-t border-border bg-white">
         <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="flex items-center gap-3">
-            <ConvergenceMark size={28} />
+            <BrandMark size={28} />
             <p className="text-xs leading-relaxed text-muted">
               People are the signal. Evidence is the product.
             </p>

@@ -6,14 +6,14 @@ export type ConvergenceMarkProps = {
 };
 
 /**
- * PeoplePulse convergence mark, recreated as code from the inspected brand
- * references (style-guide primary logo + `design.html` convergence mark).
+ * @deprecated Legacy placeholder — do NOT use as the production brand mark.
  *
- * Geometry lineage (34×34 grid): deep-ink rounded tile; five individual dots
- * in Pulse-Blue → Signal-Teal progression on the left converging toward one
- * solid white signal bar on the right — "many perspectives becoming one
- * signal." No raster assets, no cropped screenshots: proportions, spacing and
- * the blue/teal relationship follow the references, not a new invention.
+ * This SVG approximation predates the supplied PeoplePulse artwork and is kept
+ * only so historical imports do not break. Visible production UI must use the
+ * exact raster assets via `components/brand/BrandMark.tsx`
+ * (`public/brand/*.png`, byte-identical copies of the `docs/` sources).
+ * `components/landing/SignalGraphic.tsx` (supporting dot/signal pattern
+ * language) is unaffected and remains in use.
  */
 export function ConvergenceMark({ size = 32, label }: ConvergenceMarkProps) {
   return (

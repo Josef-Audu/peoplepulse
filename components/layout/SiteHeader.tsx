@@ -1,12 +1,14 @@
 import Link from "next/link";
-import { ConvergenceMark } from "@/components/brand/ConvergenceMark";
+import { BrandMark } from "@/components/brand/BrandMark";
 
 export function Wordmark() {
   return (
     <Link href="/" aria-label="PeoplePulse home" className="flex min-h-[44px] items-center gap-3">
-      <ConvergenceMark size={32} label="PeoplePulse home" />
+      {/* Production brand asset (docs/peoplepulse_favicon.png); alt="" because
+          the link label already names the destination. */}
+      <BrandMark size={32} alt="" priority />
       <span>
-        <span className="block text-sm font-extrabold tracking-[0.12em]">PEOPLEPULSE</span>
+        <span className="block text-lg font-extrabold tracking-tight text-ink">PeoplePulse</span>
         <span className="block text-[11px] uppercase tracking-[0.08em] text-muted">
           Human evidence platform
         </span>
