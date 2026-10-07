@@ -1,5 +1,17 @@
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import Link from "next/link";
+import {
+  AssumptionIcon,
+  DecisionIcon,
+  ExploreIcon,
+  InsightIcon,
+  ParticipantsIcon,
+  PatternIcon,
+  PulseIcon,
+  ResearchIcon,
+  TrustIcon,
+  type BrandIconProps,
+} from "@/components/brand/icons";
 
 function SectionHeading({
   id,
@@ -23,7 +35,9 @@ function SectionHeading({
   );
 }
 
-function StepList({ steps }: { steps: { title: string; detail: string }[] }) {
+type Step = { title: string; detail: string; icon: ComponentType<BrandIconProps> };
+
+function StepList({ steps }: { steps: Step[] }) {
   return (
     <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {steps.map((step, index) => (
@@ -31,9 +45,12 @@ function StepList({ steps }: { steps: { title: string; detail: string }[] }) {
           key={step.title}
           className="rounded-2xl border border-border bg-white p-5"
         >
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-paper text-pulse">
+            <step.icon size={20} />
+          </span>
           <p
             aria-hidden="true"
-            className="text-xs font-extrabold tabular-nums tracking-[0.12em] text-pulse"
+            className="mt-4 text-xs font-extrabold tabular-nums tracking-[0.12em] text-pulse"
           >
             {String(index + 1).padStart(2, "0")}
           </p>
@@ -103,14 +120,14 @@ export function HowItWorksSection() {
         />
         <StepList
           steps={[
-            { title: "Decision", detail: "State what you are trying to decide." },
-            { title: "Assumptions", detail: "Record what you currently believe." },
-            { title: "Audience", detail: "Define who needs to provide evidence." },
-            { title: "Pulse", detail: "Create a short 5–10 question instrument." },
-            { title: "Responses", detail: "Participants answer in about 1–3 minutes." },
-            { title: "Why", detail: "Collect the explanations behind the answers." },
-            { title: "Evidence", detail: "Review findings with context attached." },
-            { title: "Decision Brief", detail: "Package it into something usable." },
+            { title: "Decision", detail: "State what you are trying to decide.", icon: DecisionIcon },
+            { title: "Assumptions", detail: "Record what you currently believe.", icon: AssumptionIcon },
+            { title: "Audience", detail: "Define who needs to provide evidence.", icon: ParticipantsIcon },
+            { title: "Pulse", detail: "Create a short 5–10 question instrument.", icon: PulseIcon },
+            { title: "Responses", detail: "Participants answer in about 1–3 minutes.", icon: PatternIcon },
+            { title: "Why", detail: "Collect the explanations behind the answers.", icon: ExploreIcon },
+            { title: "Evidence", detail: "Review findings with context attached.", icon: InsightIcon },
+            { title: "Decision Brief", detail: "Package it into something usable.", icon: ResearchIcon },
           ]}
         />
       </div>
@@ -147,14 +164,19 @@ export function AskWhySection() {
         </div>
       </div>
       <ol className="mt-4 grid gap-4 sm:grid-cols-4">
-        {[
-          ["Response", "What people selected."],
-          ["Explanation", "Why they selected it, in their words."],
-          ["Pattern", "What repeats across explanations."],
-          ["Evidence", "Pattern plus context and limitations."],
-        ].map(([title, detail]) => (
+        {(
+          [
+            { icon: PulseIcon, title: "Response", detail: "What people selected." },
+            { icon: ExploreIcon, title: "Explanation", detail: "Why they selected it, in their words." },
+            { icon: PatternIcon, title: "Pattern", detail: "What repeats across explanations." },
+            { icon: InsightIcon, title: "Evidence", detail: "Pattern plus context and limitations." },
+          ] satisfies { icon: ComponentType<BrandIconProps>; title: string; detail: string }[]
+        ).map(({ icon: Icon, title, detail }) => (
           <li key={title} className="rounded-2xl border border-border bg-white p-4">
-            <h3 className="text-sm font-bold">{title}</h3>
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-paper text-signal-teal">
+              <Icon size={18} />
+            </span>
+            <h3 className="mt-2.5 text-sm font-bold">{title}</h3>
             <p className="mt-1 text-sm leading-relaxed text-slate-600">{detail}</p>
           </li>
         ))}
@@ -192,9 +214,12 @@ export function DecisionBriefSection({ children }: { children?: ReactNode }) {
             </article>
           ))}
         </div>
-        <p className="mt-4 border-l-[3px] border-warning pl-3 text-xs leading-relaxed text-muted">
-          Illustrative structure. A real brief always carries its evidence limitations alongside
-          its findings.
+        <p className="mt-4 flex gap-2 border-l-[3px] border-warning pl-3 text-xs leading-relaxed text-muted">
+          <TrustIcon size={16} className="mt-0.5 text-muted" />
+          <span>
+            Illustrative structure. A real brief always carries its evidence limitations alongside
+            its findings.
+          </span>
         </p>
       </div>
     </section>

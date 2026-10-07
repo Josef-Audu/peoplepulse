@@ -1,20 +1,8 @@
 import Link from "next/link";
-import { BrandMark } from "@/components/brand/BrandMark";
+import { PeoplePulseHomeLink } from "@/components/brand/PeoplePulseLogo";
 
 export function Wordmark() {
-  return (
-    <Link href="/" aria-label="PeoplePulse home" className="flex min-h-[44px] items-center gap-3">
-      {/* Production brand asset (docs/peoplepulse_favicon.png); alt="" because
-          the link label already names the destination. */}
-      <BrandMark size={32} alt="" priority />
-      <span>
-        <span className="block text-lg font-extrabold tracking-tight text-ink">PeoplePulse</span>
-        <span className="block text-[11px] uppercase tracking-[0.08em] text-muted">
-          Human evidence platform
-        </span>
-      </span>
-    </Link>
-  );
+  return <PeoplePulseHomeLink />;
 }
 
 /** Marketing top navigation: wordmark, minimal links, primary-action placeholder. */

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { BrandPreloader } from "@/components/brand/BrandPreloader";
 import "./globals.css";
 
 // Inter per PRD §18, loaded via next/font (self-hosted at build, no runtime CDN).
@@ -18,7 +19,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="bg-paper font-sans text-ink antialiased">{children}</body>
+      <body className="bg-paper font-sans text-ink antialiased">
+        <BrandPreloader />
+        {children}
+      </body>
     </html>
   );
 }

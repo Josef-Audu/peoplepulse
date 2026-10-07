@@ -30,3 +30,163 @@
 html {
   scroll-behavior: smooth;
 }
+
+/*
+ * PeoplePulse motion system — movement represents evidence forming.
+ * Durations 300–800ms, ease-out, small restrained staggers. No bouncing,
+ * no looping (one extremely subtle ambient float only). Base styles are the
+ * FINAL visible state; keyframes (fill-mode both/backwards) stage the intro,
+ * so `prefers-reduced-motion` only needs to cancel animations.
+ */
+
+/* Hero layers 1+2: individuals appear, drift subtly toward the signal. */
+.pp-dot {
+  opacity: 1;
+  animation: pp-dot-in 600ms ease-out both;
+}
+@keyframes pp-dot-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(10px);
+  }
+}
+
+.pp-tie {
+  opacity: 0.7;
+  animation: pp-fade-in 800ms ease-out 300ms both;
+}
+@keyframes pp-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.7;
+  }
+}
+
+/* Hero layer 3: official signal motif resolves once, then remains static. */
+.pp-layer-signal {
+  animation: pp-signal-in 700ms ease-out 700ms both;
+}
+@keyframes pp-signal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Hero layer 4: pattern bars resolve left to right. */
+.pp-bar {
+  transform-origin: left center;
+  animation: pp-bar-in 500ms ease-out both;
+}
+@keyframes pp-bar-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Hero layer 5: evidence result fades up (default 1400ms; inline delays vary). */
+.pp-result {
+  animation: pp-rise 500ms ease-out 1400ms both;
+}
+@keyframes pp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scroll reveals: hidden class is added by JS only — no-JS stays visible. */
+.pp-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 600ms ease-out,
+    transform 600ms ease-out;
+}
+.pp-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Branded preloader: dots converge, signal completes, interface fades in. */
+.pp-preloader {
+  transition: opacity 300ms ease-out;
+}
+.pp-preloader-hide {
+  opacity: 0;
+  pointer-events: none;
+}
+.pp-pre-dot {
+  animation: pp-pre-dot 800ms ease-out both;
+}
+@keyframes pp-pre-dot {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Loading skeletons: restrained neutral sweep, transform-free. */
+.pp-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #e5e7eb;
+}
+.pp-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.65) 50%, transparent 80%);
+  animation: pp-sweep 1.4s ease-out infinite;
+}
+@keyframes pp-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .pp-dot,
+  .pp-tie,
+  .pp-layer-signal,
+  .pp-bar,
+  .pp-result,
+  .pp-pre-dot {
+    animation: none;
+  }
+  .pp-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .pp-skeleton::after {
+    animation: none;
+  }
+}

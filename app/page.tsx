@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { BrandMark } from "@/components/brand/BrandMark";
-import { SignalGraphic } from "@/components/landing/SignalGraphic";
+import { PeoplePulseLogo } from "@/components/brand/PeoplePulseLogo";
+import { HeroEvidenceGraphic } from "@/components/landing/HeroEvidenceGraphic";
+import { Reveal } from "@/components/landing/Reveal";
 import {
   ProblemSection,
   HowItWorksSection,
@@ -57,24 +58,30 @@ export default function Home() {
                 5–10 questions · about 1–3 minutes per Pulse · bounded, contextualized evidence
               </p>
             </div>
-            <SignalGraphic />
+            <HeroEvidenceGraphic />
           </div>
         </section>
 
-        <ProblemSection />
+        <Reveal>
+          <ProblemSection />
+        </Reveal>
 
         <div id="how-it-works">
-          <HowItWorksSection />
+          <Reveal>
+            <HowItWorksSection />
+          </Reveal>
         </div>
 
-        <AskWhySection />
+        <Reveal>
+          <AskWhySection />
+        </Reveal>
 
         {/* EVIDENCE */}
         <section
           aria-labelledby="evidence-heading"
           className="border-y border-border bg-white"
         >
-          <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6">
+          <Reveal className="mx-auto max-w-5xl px-4 py-14 sm:px-6">
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-signal-teal">
               Evidence, with context
             </p>
@@ -121,20 +128,26 @@ export default function Home() {
                 />
               </div>
             </div>
-          </div>
+          </Reveal>
         </section>
 
-        <DecisionBriefSection />
+        <Reveal>
+          <DecisionBriefSection />
+        </Reveal>
 
-        <AudiencesSection />
+        <Reveal>
+          <AudiencesSection />
+        </Reveal>
 
-        <FinalCtaSection />
+        <Reveal>
+          <FinalCtaSection />
+        </Reveal>
       </main>
 
       <footer className="border-t border-border bg-white">
         <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="flex items-center gap-3">
-            <BrandMark size={28} />
+            <PeoplePulseLogo variant="compact" />
             <p className="text-xs leading-relaxed text-muted">
               People are the signal. Evidence is the product.
             </p>

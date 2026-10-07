@@ -10,9 +10,9 @@ export type ConvergenceMarkProps = {
  *
  * This SVG approximation predates the supplied PeoplePulse artwork and is kept
  * only so historical imports do not break. Visible production UI must use the
- * exact raster assets via `components/brand/BrandMark.tsx`
- * (`public/brand/*.png`, byte-identical copies of the `docs/` sources).
- * `components/landing/SignalGraphic.tsx` (supporting dot/signal pattern
+ * official vector identity (`components/brand/PeoplePulseLogo.tsx` /
+ * `PeoplePulseSymbol.tsx`, geometry measured from the `docs/` sources).
+ * `components/landing/HeroEvidenceGraphic.tsx` (supporting dot/signal pattern
  * language) is unaffected and remains in use.
  */
 export function ConvergenceMark({ size = 32, label }: ConvergenceMarkProps) {

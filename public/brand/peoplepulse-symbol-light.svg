@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-label="PeoplePulse symbol">
+  <title>PeoplePulse symbol — many perspectives becoming one signal</title>
+  <!--
+    Light-surface variant of peoplepulse-symbol.svg (identical measured
+    geometry). White signal core mapped to Deep Ink (#17212B) so the central
+    signal stays visible on light backgrounds — matching the style guide's
+    dark-centered light usage. For dark backgrounds use peoplepulse-symbol.svg.
+  -->
+  <!-- Left: individual blue perspectives + indigo tip -->
+  <circle cx="236.5" cy="479.8" r="44" fill="#443BF1"/>
+  <circle cx="318.8" cy="397.3" r="44" fill="#2563EB"/>
+  <circle cx="339.6" cy="663.2" r="45" fill="#2563EB"/>
+  <circle cx="430.3" cy="745.1" r="42" fill="#2563EB"/>
+  <circle cx="495.5" cy="242.6" r="49" fill="#2563EB"/>
+  <circle cx="506.8" cy="821" r="48" fill="#2563EB"/>
+  <!-- Blue signal pair, lower left -->
+  <line x1="284.6" y1="567.9" x2="307.6" y2="551.9" stroke="#2563EB" stroke-width="54" stroke-linecap="round"/>
+  <circle cx="284.6" cy="567.9" r="40" fill="#2563EB"/>
+  <circle cx="307.6" cy="551.9" r="40" fill="#2563EB"/>
+  <!-- Central white signal pairs -->
+  <line x1="516.8" y1="394.3" x2="582" y2="456.3" stroke="#17212B" stroke-width="64" stroke-linecap="round"/>
+  <circle cx="516.8" cy="394.3" r="47" fill="#17212B"/>
+  <circle cx="582" cy="456.3" r="47" fill="#17212B"/>
+  <line x1="435.9" y1="456.4" x2="496.1" y2="523.2" stroke="#17212B" stroke-width="64" stroke-linecap="round"/>
+  <circle cx="435.9" cy="456.4" r="47" fill="#17212B"/>
+  <circle cx="496.1" cy="523.2" r="47" fill="#17212B"/>
+  <!-- White individuals -->
+  <circle cx="404.3" cy="316" r="43" fill="#17212B"/>
+  <circle cx="427.9" cy="594.6" r="42" fill="#17212B"/>
+  <circle cx="503.2" cy="671.6" r="40" fill="#17212B"/>
+  <!-- Right: teal/green perspectives -->
+  <circle cx="584" cy="316.7" r="42" fill="#069A96"/>
+  <circle cx="670.2" cy="391.9" r="48" fill="#089A7E"/>
+  <circle cx="768" cy="480" r="56" fill="#0EA17F"/>
+  <circle cx="763.7" cy="610.5" r="46" fill="#0AA56F"/>
+  <circle cx="666" cy="682.1" r="44" fill="#07A081"/>
+  <circle cx="583.9" cy="744.8" r="39" fill="#05989D"/>
+  <!-- Teal signal pair -->
+  <line x1="617.8" y1="588.6" x2="640.8" y2="572.8" stroke="#09A092" stroke-width="53" stroke-linecap="round"/>
+  <circle cx="617.8" cy="588.6" r="39" fill="#09A092"/>
+  <circle cx="640.8" cy="572.8" r="39" fill="#09A092"/>
+</svg>
