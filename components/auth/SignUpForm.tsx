@@ -95,12 +95,6 @@ export function SignUpForm() {
           Open the confirmation link, then sign in. Your account is not fully authenticated until
           verification is completed.
         </p>
-        <Link
-          href="/sign-in"
-          className="mt-4 flex min-h-[44px] items-center justify-center rounded-lg border border-pulse-dark bg-pulse px-4 text-sm font-bold text-white hover:bg-pulse-dark"
-        >
-          Continue to sign in
-        </Link>
         <div className="mt-2">
           <ResendVerificationForm
             initialEmail={confirmationEmail}
