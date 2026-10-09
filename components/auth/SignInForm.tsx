@@ -124,6 +124,11 @@ export function SignInForm() {
         {isSubmitting ? "Signing in…" : "Sign in"}
       </button>
       <p className="mt-4 text-center text-sm text-slate-600">
+        <Link href="/forgot-password" className="font-semibold text-pulse hover:text-pulse-dark">
+          Forgot password?
+        </Link>
+      </p>
+      <p className="mt-4 text-center text-sm text-slate-600">
         New to PeoplePulse?{" "}
         <Link href="/sign-up" className="font-semibold text-pulse hover:text-pulse-dark">
           Create an account

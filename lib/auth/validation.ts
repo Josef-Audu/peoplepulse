@@ -76,6 +76,22 @@ export const resendSchema = z.object({
   email: emailField,
 });
 
+export const forgotPasswordSchema = z.object({
+  email: emailField,
+});
+
+export const updatePasswordSchema = z
+  .object({
+    password: passwordField,
+    confirmPassword: z.string().min(1, "Repeat your new password."),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
+
 export type SignUpValues = z.infer<typeof signUpSchema>;
 export type SignInValues = z.infer<typeof signInSchema>;
 export type ResendValues = z.infer<typeof resendSchema>;
+export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
+export type UpdatePasswordValues = z.infer<typeof updatePasswordSchema>;

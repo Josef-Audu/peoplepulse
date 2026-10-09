@@ -1,17 +1,20 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { getSafeRedirectTarget } from "@/lib/auth/redirect";
 
 /**
- * Supabase email-verification callback (PKCE code exchange), handled server-side
- * with SSR cookies — no tokens in URLs, no localStorage, no service role.
+ * Supabase email-verification + password-recovery callback (PKCE code
+ * exchange), handled server-side with SSR cookies — no tokens in URLs,
+ * no localStorage, no service role.
  *
- * - ?code=… valid → session cookies set → /auth/verified?status=ok
+ * - ?code=… valid, no ?next=… → /auth/verified?status=ok (legacy verify flow)
+ * - ?code=… valid, ?next=/reset-password → the validated next destination
+ *   (recovery flow; `next` must be a safe internal path — open redirects
+ *   are impossible by construction via getSafeRedirectTarget)
  * - missing / invalid / expired / already-used code, or Supabase error →
  *   /auth/verified?status=invalid
  *
  * Controlled status enum only: raw Supabase errors never leave the server.
- * No destination parameter exists here, so no open-redirect surface is added
- * (post-verification navigation reuses the existing safe redirect utility).
  */
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -29,7 +32,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(invalidUrl);
   }
 
-  let response = NextResponse.redirect(successUrl);
+  // Optional recovery destination (e.g. /reset-password). Falls back to the
+  // legacy verified page when absent; an unsafe value can never redirect
+  // off-site because getSafeRedirectTarget only returns internal paths.
+  const nextParam = requestUrl.searchParams.get("next");
+  const hasNext = nextParam !== null;
+  const nextTarget = hasNext ? getSafeRedirectTarget(nextParam) : null;
+  const nextUrl = nextTarget ? new URL(nextTarget, requestUrl.origin) : null;
+  let response = NextResponse.redirect(nextUrl ?? successUrl);
   const supabase = createServerClient(supabaseUrl, anonKey, {
     cookies: {
       getAll() {
@@ -37,7 +47,7 @@ export async function GET(request: NextRequest) {
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        response = NextResponse.redirect(successUrl);
+        response = NextResponse.redirect(nextUrl ?? successUrl);
         cookiesToSet.forEach(({ name, value, options }) =>
           response.cookies.set(name, value, options)
         );
