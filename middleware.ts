@@ -2,25 +2,18 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 /**
- * Clerk session middleware (post-migration). Single session system —
- * the Supabase cookie-refresh middleware is retired, not run in parallel.
- *
- * Explicit public allowlist; everything else requires a session.
- * Legacy Supabase Auth routes (/forgot-password, /reset-password,
- * /auth/callback, /auth/verified) stay public ONLY until Clerk
- * verification/recovery flows are confirmed, then they are retired.
+ * Clerk session middleware. Single session system — legacy Supabase Auth
+ * routes were retired in Phase 6 (account recovery is Clerk's own
+ * sign-in/recovery experience). Explicit public allowlist; everything else
+ * requires a session.
  */
 const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/p/(.*)",
-  "/forgot-password(.*)",
-  "/reset-password(.*)",
-  "/auth/callback(.*)",
-  "/auth/verified(.*)",
-  // Dev-only Clerk→Supabase acceptance probe (deleted before any commit).
-  "/api/clerk-token-check(.*)",
+  "/privacy(.*)",
+  "/terms(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
