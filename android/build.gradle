@@ -1,0 +1,5 @@
+// Top-level build file for the PeoplePulse Android wrapper.
+// No application logic here; module config lives in app/build.gradle.
+plugins {
+    id("com.android.application") version "8.5.2" apply false
+}

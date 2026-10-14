@@ -1,0 +1,34 @@
+plugins {
+    id("com.android.application")
+}
+
+android {
+    namespace = "com.peoplepulse.app"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.peoplepulse.app"
+        minSdk = 26
+        targetSdk = 34
+        versionCode = 1
+        // Base name; the debug build type appends "-debug" via versionNameSuffix.
+        versionName = "1.0"
+    }
+
+    buildTypes {
+        getByName("debug") {
+            // Keep the production applicationId so the testing APK exercises
+            // the real package identity. Debug status is carried by
+            // versionNameSuffix instead.
+            versionNameSuffix = "-debug"
+        }
+        getByName("release") {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}

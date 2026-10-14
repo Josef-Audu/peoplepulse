@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand tokens mirrored from the web app (PRD §17). -->
+    <color name="pulse">#2563EB</color>
+    <color name="paper">#F8FAF9</color>
+</resources>
