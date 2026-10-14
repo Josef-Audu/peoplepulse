@@ -22,14 +22,14 @@ export function SiteHeader() {
             href="/dashboard"
             className="flex min-h-[44px] items-center rounded-lg px-4 text-sm text-slate-600 hover:text-ink"
           >
-            App shell
+            Dashboard
           </Link>
         </nav>
         <Link
           href="/dashboard"
           className="flex min-h-[44px] items-center rounded-lg border border-pulse-dark bg-pulse px-5 text-sm font-bold text-white shadow-md shadow-pulse/30 hover:bg-pulse-dark"
         >
-          Open the app shell
+          Open dashboard
         </Link>
       </div>
     </header>

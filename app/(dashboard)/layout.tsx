@@ -53,7 +53,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           </div>
           <main id="dashboard-content">{children}</main>
           <footer className="mt-10 border-t border-border pt-4 text-xs text-muted">
-            PeoplePulse app shell · People are the signal. Evidence is the product.
+            PeoplePulse research · People are the signal. Evidence is the product.
           </footer>
         </div>
       </div>
