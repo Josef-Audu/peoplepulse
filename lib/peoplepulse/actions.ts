@@ -5,8 +5,17 @@ import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { getServiceClient } from "./server";
+import { createClerkSupabaseClient } from "@/lib/supabase/clerk-server";
+import { getPublicClient } from "./server";
+import { recordAudit } from "./profile-actions";
 import { asQuestions, type Project, type ProjectCardData, type Pulse } from "./types";
+
+/**
+ * Phase 6 authorization: normal creator CRUD runs as the CALLER via their
+ * Clerk JWT (Supabase Third-Party Auth + RLS). The service role is NOT used
+ * here — it remains only for audit_events writes (see profile-actions).
+ * Explicit ownership checks stay as defense-in-depth with clear errors.
+ */
 
 /* ------------------------------------------------------------------ auth */
 
@@ -17,7 +26,7 @@ async function requireUserId(): Promise<string> {
 }
 
 async function requireOwnedProject(projectId: string, userId: string): Promise<Project> {
-  const db = getServiceClient();
+  const db = await createClerkSupabaseClient();
   const { data, error } = await db.from("projects").select("*").eq("id", projectId).single();
   if (error || !data) throw new Error("NOT_FOUND: research project does not exist.");
   const project = data as Project;
@@ -59,21 +68,23 @@ export async function createProject(formData: FormData): Promise<void> {
   });
   if (!parsed.success) throw new Error("INVALID: please complete every field (title, decision, assumption, audience).");
 
-  const db = getServiceClient();
+  const db = await createClerkSupabaseClient();
   const { data, error } = await db
     .from("projects")
     .insert({ owner_id: userId, ...parsed.data })
     .select("id")
     .single();
   if (error || !data) throw new Error("DB_ERROR: could not create the research project.");
+  const id = (data as { id: string }).id;
+  await recordAudit("project.create", "project", id);
   revalidatePath("/dashboard");
   revalidatePath("/research");
-  redirect(`/research/${(data as { id: string }).id}`);
+  redirect(`/research/${id}`);
 }
 
 export async function listProjects(): Promise<ProjectCardData[]> {
   const userId = await requireUserId();
-  const db = getServiceClient();
+  const db = await createClerkSupabaseClient();
   const { data, error } = await db
     .from("projects")
     .select("*")
@@ -99,7 +110,7 @@ export async function listProjects(): Promise<ProjectCardData[]> {
 export async function getProject(projectId: string): Promise<{ project: Project; pulse: Pulse | null; responseCount: number }> {
   const userId = await requireUserId();
   const project = await requireOwnedProject(projectId, userId);
-  const db = getServiceClient();
+  const db = await createClerkSupabaseClient();
   const { data: pulseData } = await db.from("pulses").select("*").eq("project_id", projectId).limit(1);
   const raw = (pulseData ?? [])[0] as Omit<Pulse, "questions"> & { questions: unknown } | undefined;
   const pulse: Pulse | null = raw ? { ...raw, questions: asQuestions(raw.questions) } : null;
@@ -119,16 +130,18 @@ export async function savePulse(projectId: string, input: { title: string; descr
   const parsed = pulseSchema.safeParse(input);
   if (!parsed.success) throw new Error("INVALID: a Pulse needs a title and 1–8 questions (single_choice needs 2–6 options).");
 
-  const db = getServiceClient();
+  const db = await createClerkSupabaseClient();
   const { data: existing } = await db.from("pulses").select("id").eq("project_id", projectId).limit(1);
   if (existing && existing.length > 0) {
+    const pid = (existing[0] as { id: string }).id;
     const { error } = await db
       .from("pulses")
       .update({ title: parsed.data.title, description: parsed.data.description ?? "", questions: parsed.data.questions })
-      .eq("id", (existing[0] as { id: string }).id);
+      .eq("id", pid);
     if (error) throw new Error("DB_ERROR: could not update the Pulse.");
+    await recordAudit("pulse.update", "pulse", pid);
     revalidatePath(`/research/${projectId}`);
-    return (existing[0] as { id: string }).id;
+    return pid;
   }
 
   for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -145,8 +158,10 @@ export async function savePulse(projectId: string, input: { title: string; descr
       .select("id")
       .single();
     if (!error && data) {
+      const pid = (data as { id: string }).id;
+      await recordAudit("pulse.create", "pulse", pid);
       revalidatePath(`/research/${projectId}`);
-      return (data as { id: string }).id;
+      return pid;
     }
   }
   throw new Error("DB_ERROR: could not create the Pulse.");
@@ -154,12 +169,18 @@ export async function savePulse(projectId: string, input: { title: string; descr
 
 export async function setPulseStatus(projectId: string, pulseId: string, status: "open" | "closed" | "draft"): Promise<void> {
   const userId = await requireUserId();
-  await requireOwnedProject(projectId, userId);
-  const db = getServiceClient();
+  const project = await requireOwnedProject(projectId, userId);
+  const db = await createClerkSupabaseClient();
   const { data: pulse } = await db.from("pulses").select("id,project_id").eq("id", pulseId).single();
   if (!pulse || (pulse as { project_id: string }).project_id !== projectId) throw new Error("FORBIDDEN: pulse does not belong to this project.");
-  const { error } = await db.from("pulses").update({ status }).eq("id", pulseId);
+  // Snapshot audience context onto the pulse at publish: participants read
+  // only this public-safe copy, never the creator-private project row.
+  const { error } = await db
+    .from("pulses")
+    .update(status === "open" ? { status, audience_snapshot: project.audience } : { status })
+    .eq("id", pulseId);
   if (error) throw new Error("DB_ERROR: could not update Pulse status.");
+  await recordAudit(status === "open" ? "pulse.publish" : "pulse.close", "pulse", pulseId);
   revalidatePath(`/research/${projectId}`);
   revalidatePath("/dashboard");
 }
@@ -169,7 +190,7 @@ export async function setPulseStatus(projectId: string, pulseId: string, status:
 export async function getResults(projectId: string) {
   const { project, pulse, responseCount } = await getProject(projectId);
   if (!pulse) return { project, pulse: null, responses: [], responseCount };
-  const db = getServiceClient();
+  const db = await createClerkSupabaseClient();
   const { data, error } = await db
     .from("responses")
     .select("*")
@@ -181,7 +202,7 @@ export async function getResults(projectId: string) {
 
 export async function listPulses(): Promise<{ pulse: Pulse; projectTitle: string; responseCount: number }[]> {
   const userId = await requireUserId();
-  const db = getServiceClient();
+  const db = await createClerkSupabaseClient();
   const { data: projects } = await db.from("projects").select("id,title").eq("owner_id", userId);
   const rows: { pulse: Pulse; projectTitle: string; responseCount: number }[] = [];
   for (const p of ((projects ?? []) as { id: string; title: string }[])) {
@@ -197,20 +218,28 @@ export async function listPulses(): Promise<{ pulse: Pulse; projectTitle: string
 /* ------------------------------------------------------------------ public participant (no login) */
 
 export async function getPublicPulse(slug: string): Promise<{ pulse: Pulse; projectTitle: string; audience: string } | null> {
-  // Service-role (server-only): the anon role was not granted table
-  // privileges in this project, so public reads go through the same
-  // validated server layer as everything else. Only OPEN pulses are
-  // returned, and only title/audience context is exposed.
-  const db = getServiceClient();
+  // Least-privilege anon path: RLS exposes OPEN pulses only, and the only
+  // context exposed is the public-safe audience snapshot written at publish.
+  // Creator-private project rows are never readable by participants.
+  const db = getPublicClient();
   const { data, error } = await db.from("pulses").select("*").eq("public_slug", slug).eq("status", "open").single();
   if (error || !data) return null;
   const raw = data as Omit<Pulse, "questions"> & { questions: unknown };
-  const { data: proj } = await db.from("projects").select("title,audience").eq("id", raw.project_id).single();
-  const meta = (proj ?? { title: "", audience: "" }) as { title: string; audience: string };
-  return { pulse: { ...raw, questions: asQuestions(raw.questions) }, projectTitle: meta.title, audience: meta.audience };
+  const snapshot =
+    typeof (raw as Record<string, unknown>).audience_snapshot === "string"
+      ? ((raw as Record<string, unknown>).audience_snapshot as string)
+      : "";
+  return {
+    pulse: { ...raw, audience_snapshot: snapshot, questions: asQuestions(raw.questions) },
+    projectTitle: raw.title,
+    audience: snapshot,
+  };
 }
 
-export async function submitResponse(slug: string, answers: Record<string, string>): Promise<void> {
+export async function submitResponse(slug: string, answers: Record<string, string>, honeypot = ""): Promise<void> {
+  // Honeypot: bots that fill the hidden field get a silent fake success —
+  // no error signal to adapt to, nothing stored.
+  if (typeof honeypot === "string" && honeypot.trim() !== "") return;
   const target = await getPublicPulse(slug);
   if (!target) throw new Error("CLOSED: this Pulse is not open for responses.");
   const cleaned: Record<string, string> = {};
@@ -221,7 +250,7 @@ export async function submitResponse(slug: string, answers: Record<string, strin
     if (q.type === "single_choice" && !(q.options ?? []).includes(value)) throw new Error("INVALID: unknown choice submitted.");
     cleaned[q.id] = value;
   }
-  const db = getServiceClient();
+  const db = getPublicClient();
   const { error } = await db.from("responses").insert({ pulse_id: target.pulse.id, answers: cleaned });
   if (error) throw new Error("DB_ERROR: could not save your response. Please try again.");
 }

@@ -30,6 +30,8 @@ export type Pulse = {
   public_slug: string;
   status: PulseStatus;
   questions: Question[];
+  /** Public-safe audience context snapshotted at publish time (may be null). */
+  audience_snapshot?: string | null;
   created_at: string;
 };
 
