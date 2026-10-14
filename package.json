@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint .",
     "dev": "node scripts/serve.js",
-    "validate": "node scripts/validate.js"
+    "validate": "node scripts/validate.js",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.14",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.7",
+    "@playwright/test": "^1.64.1",
     "@types/node": "^26.6.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
