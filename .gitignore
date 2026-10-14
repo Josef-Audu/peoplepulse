@@ -31,3 +31,7 @@ npm-debug.log*
 
 # Local Netlify CLI output (deploy cache, edge bundles, static snapshots)
 .netlify/
+
+# Playwright local test output (never commit traces/screenshots)
+test-results/
+playwright-report/

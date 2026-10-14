@@ -28,6 +28,8 @@ export function ParticipantFlow({
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  // Honeypot bot defense: humans never see/fill this; bots often do.
+  const [website, setWebsite] = useState("");
   const [already] = useState<boolean>(() => {
     try {
       return window.localStorage.getItem(`pp-submitted-${slug}`) === "1";
@@ -60,7 +62,7 @@ export function ParticipantFlow({
     setError(null);
     setSending(true);
     try {
-      await submitResponse(slug, answers);
+      await submitResponse(slug, answers, website);
       try {
         window.localStorage.setItem(`pp-submitted-${slug}`, "1");
       } catch {
@@ -109,9 +111,33 @@ export function ParticipantFlow({
         </dl>
         {already ? (
           <p className="mt-4 rounded-lg border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-ink">
-            You already submitted from this device — extra responses are allowed in this demo.
+            You already submitted from this device. Please respond only once per person so the evidence stays honest.
           </p>
         ) : null}
+        <div className="mt-4 rounded-xl border border-border bg-paper p-4 text-[13px] leading-relaxed text-slate-600">
+          <p className="font-bold text-ink">Before you begin</p>
+          <p className="mt-1">
+            Participation is voluntary. We collect only your answers to these questions — no
+            account, no name, no contact details. Answers are grouped into research evidence
+            with context and never reported as population-level truth.{" "}
+            <a href="/privacy" className="font-semibold text-pulse hover:text-pulse-dark">
+              Privacy Policy
+            </a>
+          </p>
+        </div>
+        <div aria-hidden="true" className="absolute h-px w-px overflow-hidden opacity-0" tabIndex={-1}>
+          <label>
+            Leave this field empty
+            <input
+              type="text"
+              name="website"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </label>
+        </div>
         <button
           type="button"
           onClick={() => setStage("answering")}

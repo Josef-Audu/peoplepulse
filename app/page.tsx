@@ -162,6 +162,12 @@ export default function Home() {
             <Link href="/dashboard" className="font-semibold text-pulse hover:text-pulse-dark">
               Dashboard
             </Link>
+            <Link href="/privacy" className="font-semibold text-pulse hover:text-pulse-dark">
+              Privacy
+            </Link>
+            <Link href="/terms" className="font-semibold text-pulse hover:text-pulse-dark">
+              Terms
+            </Link>
           </nav>
         </div>
       </footer>
