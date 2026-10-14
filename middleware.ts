@@ -1,74 +1,47 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
 /**
- * Phase 1A session architecture (plan AD-3).
- * - Refreshes Supabase auth cookies on every matched request so server
- *   components always see a current session.
- * - Protects dashboard routes server-side: unauthenticated requests redirect
- *   to /sign-in. Public routes (/, /sign-in, /sign-up) always pass through.
- * - Credential-free safe: without Supabase env configured (local scaffold),
- *   there is no session to refresh — everyone reads as signed out, protected
- *   routes redirect, public routes render. No secrets required to build or run.
+ * Clerk session middleware (post-migration). Single session system —
+ * the Supabase cookie-refresh middleware is retired, not run in parallel.
+ *
+ * Explicit public allowlist; everything else requires a session.
+ * Legacy Supabase Auth routes (/forgot-password, /reset-password,
+ * /auth/callback, /auth/verified) stay public ONLY until Clerk
+ * verification/recovery flows are confirmed, then they are retired.
  */
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/p/(.*)",
+  "/forgot-password(.*)",
+  "/reset-password(.*)",
+  "/auth/callback(.*)",
+  "/auth/verified(.*)",
+  // Dev-only Clerk→Supabase acceptance probe (deleted before any commit).
+  "/api/clerk-token-check(.*)",
+]);
 
-const PUBLIC_ROUTES = new Set(["/", "/sign-in", "/sign-up"]);
-
-// Existing dashboard shell destinations (Phase 0B). Authenticated only.
-const PROTECTED_PREFIXES = [
-  "/dashboard",
-  "/research",
-  "/pulses",
-  "/insights",
-  "/profile",
-  "/settings",
-];
-
-function isProtectedRoute(pathname: string): boolean {
-  return PROTECTED_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
-  );
-}
-
-export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
-
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  let user: { id: string } | null = null;
-
-  if (url && anonKey) {
-    const supabase = createServerClient(url, anonKey, {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
-        },
-      },
-    });
-    const { data } = await supabase.auth.getUser();
-    user = data.user;
-  }
-
-  const pathname = request.nextUrl.pathname;
-
-  if (!user && isProtectedRoute(pathname) && !PUBLIC_ROUTES.has(pathname)) {
-    const signInUrl = request.nextUrl.clone();
-    signInUrl.pathname = "/sign-in";
-    signInUrl.searchParams.set("redirectedFrom", pathname);
+export default clerkMiddleware(async (auth, request) => {
+  if (isPublicRoute(request)) return;
+  // Demo-day hardening: explicit redirect instead of auth.protect().
+  // protect() answers cookie-less dev-key requests with an internal
+  // Clerk rewrite that resolves to a 404; a plain redirect sends every
+  // fresh browser (and the installed PWA) to sign-in, where Clerk's
+  // client completes its handshake and session creation.
+  const { userId } = await auth();
+  if (!userId) {
+    const signInUrl = new URL("/sign-in", request.url);
+    signInUrl.searchParams.set("redirect_url", request.nextUrl.pathname);
     return NextResponse.redirect(signInUrl);
   }
-
-  return response;
-}
+});
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+    "/__clerk/:path*",
+  ],
 };

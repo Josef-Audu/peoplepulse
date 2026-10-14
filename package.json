@@ -12,6 +12,7 @@
     "validate": "node scripts/validate.js"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.9.14",
     "@hookform/resolvers": "^5.9.1",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",

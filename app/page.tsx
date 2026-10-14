@@ -160,7 +160,7 @@ export default function Home() {
               Create an account
             </Link>
             <Link href="/dashboard" className="font-semibold text-pulse hover:text-pulse-dark">
-              App shell
+              Dashboard
             </Link>
           </nav>
         </div>
