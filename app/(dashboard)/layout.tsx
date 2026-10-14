@@ -1,23 +1,18 @@
 import type { ReactNode } from "react";
+import { currentUser } from "@clerk/nextjs/server";
 import { DashboardNav } from "@/components/layout/DashboardNav";
 import { Wordmark } from "@/components/layout/SiteHeader";
 import { AccountBlock } from "@/components/auth/AccountBlock";
-import { isSupabaseConfigured } from "@/lib/supabase/env";
-import { createClient } from "@/lib/supabase/server";
 
 /**
- * Dashboard foundation shell (Phase 0B) + minimal authenticated identity (Phase 1B):
- * responsive sidebar navigation, account indicator with real sign-out, content area.
- * Destination pages remain honest placeholders — research functionality is Phase 2+.
+ * Dashboard foundation shell: responsive sidebar navigation, account
+ * indicator with real Clerk sign-out, content area. Clerk is the single
+ * session system — no Supabase Auth cookies are read here.
  */
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  // Credential-free safe: without Supabase configured there is no session to read.
-  let email: string | null = null;
-  if (isSupabaseConfigured()) {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    email = data.user?.email ?? null;
-  }
+  const user = await currentUser();
+  const email = user?.emailAddresses?.[0]?.emailAddress ?? null;
+
   return (
     <div className="min-h-screen bg-paper">
       <a
@@ -31,7 +26,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         <div className="flex items-center justify-between gap-4 px-4 py-2">
           <Wordmark />
           <span className="rounded-full border border-signal-teal/30 bg-signal-teal/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-signal-teal">
-            Shell
+            Research
           </span>
         </div>
       </div>
@@ -43,11 +38,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             <div className="mt-6">
               <DashboardNav />
             </div>
-            <p className="mt-6 rounded-xl border border-border bg-white p-4 text-xs leading-relaxed text-muted">
-              Phase 0B shell. Navigation destinations exist as placeholders — functionality arrives in later
-              phases.
-            </p>
-            <div className="mt-4">
+            <div className="mt-6">
               <AccountBlock email={email} />
             </div>
           </div>
